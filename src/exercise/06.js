@@ -48,15 +48,10 @@ function createPokemonResource(pokemonName) {
   return {data, image}
 }
 
-function App() {
-  const [pokemonName, setPokemonName] = React.useState('')
-  // 🐨 move these two lines to a custom hook called usePokemonResource
-  const [startTransition, isPending] = React.useTransition(SUSPENSE_CONFIG)
+function usePokemonResource(pokemonName) {
   const [pokemonResource, setPokemonResource] = React.useState(null)
-  // 🐨 call usePokemonResource with the pokemonName.
-  //    It should return both the pokemonResource and isPending
+  const [startTransition, isPending] = React.useTransition(SUSPENSE_CONFIG)
 
-  // 🐨 move this useEffect call to your custom usePokemonResource hook
   React.useEffect(() => {
     if (!pokemonName) {
       setPokemonResource(null)
@@ -66,6 +61,14 @@ function App() {
       setPokemonResource(getPokemonResource(pokemonName))
     })
   }, [pokemonName, startTransition])
+
+  return [pokemonResource, isPending]
+}
+
+function App() {
+  const [pokemonName, setPokemonName] = React.useState('')
+
+  const [pokemonResource, isPending] = usePokemonResource(pokemonName)
 
   function handleSubmit(newPokemonName) {
     setPokemonName(newPokemonName)
